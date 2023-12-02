@@ -1,0 +1,36 @@
+version: '3.4'
+
+services:
+  socket:
+    command: ["/usr/local/bin/npm", "run", "dev"]
+    build:
+      args:
+        - NODE_ENV=${NODE_ENV}
+      context: .
+      target: development
+      dockerfile: Dockerfile
+    image: ws_chat_dev
+    env_file: .env
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - SOCKET_HOST=${SOCKET_HOST}
+      - SOCKET_PORT=${SOCKET_PORT}
+
+  redis:
+    image: redis
+    restart: always
+    env_file: .env
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+    volumes:
+      - ./redisdataDev:/data
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+
