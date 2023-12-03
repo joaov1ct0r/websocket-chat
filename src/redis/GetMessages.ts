@@ -1,12 +1,12 @@
-import Redis from 'ioredis'
+import { BaseRedis } from '@Redis/BaseRedis'
 
 export interface RedisGetMessageImp {
-  execute(redis: Redis, channel: string): Promise<string>
+  execute(channel: string): Promise<string>
 }
 
-export class RedisGetMessage implements RedisGetMessageImp {
-  public async execute(redis: Redis, channel: string): Promise<string> {
-    const messages = await redis.get(channel, (error, result) => {
+export class RedisGetMessage extends BaseRedis implements RedisGetMessageImp {
+  public async execute(channel: string): Promise<string> {
+    const messages = await this._redis.get(channel, (error, result) => {
       if (error) {
         throw new Error(`Erro no redis - ${error}`)
       }
