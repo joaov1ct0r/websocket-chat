@@ -1,4 +1,4 @@
-import { IUserData } from '@Socket'
+import { IUserData } from '@Socket/socket'
 import { BaseRedis } from '@Redis/BaseRedis'
 
 export interface RedisAddMessageImp {
