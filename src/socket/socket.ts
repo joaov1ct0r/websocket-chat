@@ -15,8 +15,8 @@ export interface SocketHandlerImp {
 }
 
 export class SocketHandler {
+  private readonly MAIN_CHANNEL: string
   private readonly _io: Server
-  private readonly _mainChannel: string
   private readonly _socketAddMessage: SocketAddMessageImp
   private readonly _socketGetMessage: SocketGetMessageImp
   private readonly _socketPublishMessage: SocketPublishMessageImp
@@ -29,7 +29,7 @@ export class SocketHandler {
     socketPublishMessage: SocketPublishMessageImp,
     socketSubscribeToChannel: SocketSubscribeToChannelImp,
   ) {
-    this._mainChannel = 'geral'
+    this.MAIN_CHANNEL = 'geral'
 
     const io = new Server(httpServer, {
       cors: {
@@ -57,21 +57,21 @@ export class SocketHandler {
 
     socket.emit('welcome', { from: 'Server', message: 'Bem Vindo!' })
 
-    this._socketSubscribeToChannel.handle(this._mainChannel, socket)
+    this._socketSubscribeToChannel.handle(this.MAIN_CHANNEL, socket)
 
-    const messages = await this._socketGetMessage.handle(this._mainChannel)
+    const messages = await this._socketGetMessage.handle(this.MAIN_CHANNEL)
     socket.emit('messages', messages)
 
     socket.on('new_message', async ({ from, message }) => {
-      await this._socketPublishMessage.handle(this._mainChannel, from, message)
+      await this._socketPublishMessage.handle(this.MAIN_CHANNEL, from, message)
 
       const messages = JSON.parse(
-        await this._socketGetMessage.handle(this._mainChannel),
+        await this._socketGetMessage.handle(this.MAIN_CHANNEL),
       ) as IUserData[]
 
       messages.push({ user: from, message })
 
-      await this._socketAddMessage.handle(this._mainChannel, messages)
+      await this._socketAddMessage.handle(this.MAIN_CHANNEL, messages)
     })
   }
 
