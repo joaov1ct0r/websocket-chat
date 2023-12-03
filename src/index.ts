@@ -6,7 +6,7 @@ import { RedisClient } from '@Redis/client'
 const app = express()
 const server = http.createServer(app)
 
-const redis = new RedisClient().redis
+const redis = new RedisClient().getRedis
 
 const socketFactory: SocketFactoryImp = new SocketFactory(server, redis)
 const socket = socketFactory.create()

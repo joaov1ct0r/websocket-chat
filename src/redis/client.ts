@@ -1,7 +1,7 @@
 import Redis from 'ioredis'
 
 export interface RedisClientImp {
-  get redis(): Redis
+  get getRedis(): Redis
 }
 
 export class RedisClient implements RedisClientImp {
@@ -14,7 +14,7 @@ export class RedisClient implements RedisClientImp {
     })
   }
 
-  get redis(): Redis {
+  get getRedis(): Redis {
     return this._redis
   }
 }
