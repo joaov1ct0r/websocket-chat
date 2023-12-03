@@ -8,7 +8,7 @@
     "baseUrl": "./",
     "paths": {
       "@Socket": ["src/socket.ts"],
-      "@Redis": ["src/redis.ts"],
+      "@Redis/*": ["src/redis/*"],
     },
     "allowJs": true,
     "outDir": "build",
