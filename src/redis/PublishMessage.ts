@@ -1,22 +1,19 @@
-import Redis from 'ioredis'
+import { BaseRedis } from '@Redis/BaseRedis'
 
 export interface RedisPublishMessageImp {
-  execute(
-    redis: Redis,
-    channel: string,
-    user: string,
-    message: string,
-  ): Promise<void>
+  execute(channel: string, user: string, message: string): Promise<void>
 }
 
-export class RedisPublishMessage implements RedisPublishMessageImp {
+export class RedisPublishMessage
+  extends BaseRedis
+  implements RedisPublishMessageImp
+{
   public async execute(
-    redis: Redis,
     channel: string,
     user: string,
     message: string,
   ): Promise<void> {
-    await redis.publish(
+    await this._redis.publish(
       channel,
       JSON.stringify({
         user,
