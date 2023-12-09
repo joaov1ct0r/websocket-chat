@@ -12,7 +12,7 @@ import { RedisPublishMessage } from '@Redis/PublishMessage'
 import { RedisSubscribeToChannel } from '@Redis/SubscribeToChannel'
 import { RedisGetMessage } from '@Redis/GetMessages'
 import { SocketEmitMessages } from '@Socket/EmitMessages'
-import { SocketHandleNewMessage } from '@Socket/HandleNewMessage'
+import { SocketNewMessage } from '@Socket/NewMessage'
 
 export interface SocketFactoryImp {
   create(): SocketHandler
@@ -49,7 +49,7 @@ export class SocketFactory {
 
     const socketEmitMessages = new SocketEmitMessages()
 
-    const socketHandleNewMessage = new SocketHandleNewMessage(
+    const socketNewMessage = new SocketNewMessage(
       socketPublishMessage,
       socketGetMessage,
       socketAddMessage,
@@ -57,14 +57,12 @@ export class SocketFactory {
 
     return new SocketHandler(
       this._httpServer,
-      socketAddMessage,
       socketGetMessage,
-      socketPublishMessage,
       socketSubscribeToChannel,
       socketWelcome,
       socketBroadcastNewConnection,
       socketEmitMessages,
-      socketHandleNewMessage,
+      socketNewMessage,
     )
   }
 }
