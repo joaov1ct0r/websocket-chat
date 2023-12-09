@@ -4,6 +4,10 @@ import { SocketGetMessageImp } from '@Socket/GetMessage'
 import { SocketAddMessageImp } from '@Socket/AddMessage'
 import { SocketPublishMessageImp } from '@Socket/PublishMessage'
 import { SocketSubscribeToChannelImp } from '@Socket/SubscribeToChannel'
+import { SocketWelcomeImp } from '@Socket/Welcome'
+import { SocketBroadcastNewConnectionImp } from '@Socket/BroadcastNewConnection'
+import { SocketEmitMessagesImp } from '@Socket/EmitMessages'
+import { SocketHandleNewMessageImp } from '@Socket/HandleNewMessage'
 
 export interface IUserData {
   user: string
@@ -21,6 +25,10 @@ export class SocketHandler {
   private readonly _socketGetMessage: SocketGetMessageImp
   private readonly _socketPublishMessage: SocketPublishMessageImp
   private readonly _socketSubscribeToChannel: SocketSubscribeToChannelImp
+  private readonly _socketHandleWelcome: SocketWelcomeImp
+  private readonly _socketBroadcastNewConnection: SocketBroadcastNewConnectionImp
+  private readonly _socketEmitMessages: SocketEmitMessagesImp
+  private readonly _socketHandleNewMessage: SocketHandleNewMessageImp
 
   constructor(
     httpServer: httpServer,
@@ -28,6 +36,10 @@ export class SocketHandler {
     socketGetMessage: SocketGetMessageImp,
     socketPublishMessage: SocketPublishMessageImp,
     socketSubscribeToChannel: SocketSubscribeToChannelImp,
+    socketHandleWelcome: SocketWelcomeImp,
+    socketBroadcastNewConnection: SocketBroadcastNewConnectionImp,
+    socketEmitMessages: SocketEmitMessagesImp,
+    socketHandleNewMessage: SocketHandleNewMessageImp,
   ) {
     this.MAIN_CHANNEL = 'geral'
 
@@ -47,32 +59,23 @@ export class SocketHandler {
     this._socketGetMessage = socketGetMessage
     this._socketPublishMessage = socketPublishMessage
     this._socketSubscribeToChannel = socketSubscribeToChannel
+    this._socketHandleWelcome = socketHandleWelcome
+    this._socketBroadcastNewConnection = socketBroadcastNewConnection
+    this._socketEmitMessages = socketEmitMessages
+    this._socketHandleNewMessage = socketHandleNewMessage
   }
 
   private async handleConnection(socket: Socket) {
-    socket.broadcast.emit('new connection', {
-      from: 'Server',
-      message: 'Novo usuario conectado!',
-    })
+    this._socketBroadcastNewConnection.handle(socket)
 
-    socket.emit('welcome', { from: 'Server', message: 'Bem Vindo!' })
+    this._socketHandleWelcome.handle(socket)
 
     this._socketSubscribeToChannel.handle(this.MAIN_CHANNEL, socket)
 
     const messages = await this._socketGetMessage.handle(this.MAIN_CHANNEL)
-    socket.emit('messages', messages)
+    this._socketEmitMessages.handle(socket, messages)
 
-    socket.on('new_message', async ({ from, message }) => {
-      await this._socketPublishMessage.handle(this.MAIN_CHANNEL, from, message)
-
-      const messages = JSON.parse(
-        await this._socketGetMessage.handle(this.MAIN_CHANNEL),
-      ) as IUserData[]
-
-      messages.push({ user: from, message })
-
-      await this._socketAddMessage.handle(this.MAIN_CHANNEL, messages)
-    })
+    socket.on('new_message', this._socketHandleNewMessage.handle)
   }
 
   public init(): void {
