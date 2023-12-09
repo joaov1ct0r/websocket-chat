@@ -6,13 +6,13 @@ import { SocketPublishMessage } from '@Socket/PublishMessage'
 import { SocketSubscribeToChannel } from '@Socket/SubscribeToChannel'
 import { SocketWelcome } from '@Socket/Welcome'
 import { SocketBroadcastNewConnection } from '@Socket/BroadcastNewConnection'
+import { SocketEmitMessages } from '@Socket/EmitMessages'
+import { SocketNewMessage } from '@Socket/NewMessage'
 import { RedisAddMessage } from '@Redis/AddMessage'
 import Redis from 'ioredis'
 import { RedisPublishMessage } from '@Redis/PublishMessage'
 import { RedisSubscribeToChannel } from '@Redis/SubscribeToChannel'
 import { RedisGetMessage } from '@Redis/GetMessages'
-import { SocketEmitMessages } from '@Socket/EmitMessages'
-import { SocketNewMessage } from '@Socket/NewMessage'
 
 export interface SocketFactoryImp {
   create(): SocketHandler
